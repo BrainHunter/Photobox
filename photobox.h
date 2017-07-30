@@ -29,8 +29,16 @@ private slots:
     void updateEvent();
     void updateEventTest(QString string);
 
+    void on_saveButton_clicked();
+
+    void on_loadButton_clicked();
+
 private:
     Ui::Photobox *ui;
+    void setGuiVisible(bool value);
+    QString settingsFile;
+    void loadSettings();
+    void saveSettings();
 
     // Display
     QImage image;

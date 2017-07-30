@@ -13,6 +13,10 @@ Photobox::Photobox(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    settingsFile = qApp->applicationDirPath() + "/photobox.ini";
+    loadSettings();
+    qInfo() << settingsFile;
+
     //Label for the Image
     imageLabel->setBackgroundRole(QPalette::Base);
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -31,8 +35,6 @@ Photobox::Photobox(QWidget *parent) :
     watcher = new QFileSystemWatcher(this);
     connect(watcher,SIGNAL(directoryChanged(QString)),this,SLOT(updateEventTest(QString)));
 
-  // loadFile("C:\\Users\\BrainHunter\\Documents\\build-Photobox_Widget-Desktop_Qt_5_9_1_MSVC2015_64bit-Debug\\debug\\IMG_3795.JPG");
-
 }
 
 Photobox::~Photobox()
@@ -42,12 +44,12 @@ Photobox::~Photobox()
 
 void Photobox::keyPressEvent(QKeyEvent *event)
 {
-    bool ctrl_pressed = false;
-
-    if( event->modifiers() == Qt::ControlModifier )
-    {
-        ctrl_pressed = true;
-    }
+    //maybe need this some day:
+//    bool ctrl_pressed = false;
+//    if( event->modifiers() == Qt::ControlModifier )
+//    {
+//        ctrl_pressed = true;
+//    }
 
     switch( event->key() )
     {
@@ -56,8 +58,8 @@ void Photobox::keyPressEvent(QKeyEvent *event)
             watcher->removePaths(watcher->directories());
             this->showNormal();
             scrollArea->setVisible(false);
+            setGuiVisible(true);
             this->setPalette(this->style()->standardPalette());
-            //scrollArea->showNormal();
             break;
         default:
             break;
@@ -84,10 +86,6 @@ void Photobox::resizeEvent(QResizeEvent *event)
     QWidget::resizeEvent(event);
 }
 
-
-
-
-
 bool Photobox::loadFile(const QString &fileName)
 {
     QImageReader reader(fileName);
@@ -99,13 +97,7 @@ bool Photobox::loadFile(const QString &fileName)
                                  .arg(QDir::toNativeSeparators(fileName), reader.errorString()));
         return false;
     }
-
-
     setImage(newImage);
-
-    //const QString message = tr("Opened \"%1\", %2x%3, Depth: %4")
-    //    .arg(QDir::toNativeSeparators(fileName)).arg(image.width()).arg(image.height()).arg(image.depth());
-    //statusBar()->showMessage(message);
     return true;
 }
 
@@ -120,9 +112,7 @@ bool Photobox::loadFile(int num)
         imageFileList->removeAt(num);
         return false;
     }
-
     setImage(newImage);
-
     return true;
 }
 
@@ -130,9 +120,7 @@ void Photobox::setImage(const QImage &newImage)
 {
     image = newImage;
     imageLabel->setPixmap(QPixmap::fromImage(image));
-
     imageLabel->adjustSize();
-
 }
 
 
@@ -146,6 +134,9 @@ void Photobox::on_pushButton_clicked()
     QPalette pal;
     pal.setColor(QPalette::Background, Qt::black);
     this->setPalette(pal);
+
+    //hide all gui elements
+    setGuiVisible(false);
 
     // make the image visible
     scrollArea->setVisible(true);
@@ -191,10 +182,6 @@ bool Photobox::checkForNewImages(QString path)
             qInfo() << "adding to list:" + tmp;
 
         }
-
-        //qInfo() << tmp.absoluteFilePath();
-        //qInfo() << tmp.lastModified();
-
     }
     return ret;
 }
@@ -265,3 +252,76 @@ void Photobox::updateEvent()
     }
 }
 
+void Photobox::setGuiVisible(bool value)
+{
+    ui->browseButton->setVisible(value);
+    ui->directoryEdit->setVisible(value);
+    ui->fullScreenCheckBox->setVisible(value);
+    ui->label->setVisible(value);
+    ui->label_2->setVisible(value);
+    ui->label_3->setVisible(value);
+    ui->pushButton->setVisible(value);
+    ui->reviewTimeSpinBox->setVisible(value);
+    ui->slideShowTimeSpinBox->setVisible(value);
+    ui->loadButton->setVisible(value);
+    ui->saveButton->setVisible(value);
+}
+
+void Photobox::loadSettings()
+{
+     QSettings settings(settingsFile, QSettings::IniFormat);
+
+     // Path:
+     QString sPath = settings.value("path", "C:\\Photos").toString();
+     if (ui->directoryEdit)
+     {
+        ui->directoryEdit->setText(sPath);
+     }
+
+     //Slidehow Time:
+     int ssTime= settings.value("slideshowTime", "5").toInt();
+     if (ui->slideShowTimeSpinBox)
+     {
+        ui->slideShowTimeSpinBox->setValue(ssTime);
+     }
+
+     //review Time
+     int rTime= settings.value("reviewTime", "20").toInt();
+     if (ui->reviewTimeSpinBox)
+     {
+        ui->reviewTimeSpinBox->setValue(rTime);
+     }
+
+     //Show Fullscreen
+     bool showFS = settings.value("showFullscreen", "true").toBool();
+     if (ui->fullScreenCheckBox)
+     {
+        ui->fullScreenCheckBox->setChecked(showFS);
+     }
+
+}
+
+void Photobox::saveSettings()
+{
+     QSettings settings(settingsFile, QSettings::IniFormat);
+
+     // Path:
+     settings.setValue("text", ui->directoryEdit->text());
+     //Slidehow Time:
+     settings.setValue("slideshowTime", ui->slideShowTimeSpinBox->value());
+     //review Time
+     settings.setValue("reviewTime", ui->reviewTimeSpinBox->value());
+     //Show Fullscreen
+     settings.setValue("showFullscreen", ui->fullScreenCheckBox->isChecked());
+
+}
+
+void Photobox::on_saveButton_clicked()
+{
+    saveSettings();
+}
+
+void Photobox::on_loadButton_clicked()
+{
+    loadSettings();
+}
