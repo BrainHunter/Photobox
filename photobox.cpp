@@ -22,11 +22,14 @@ Photobox::Photobox(QWidget *parent) :
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     imageLabel->setScaledContents(true);
 
+
     scrollArea->setParent(this );
     scrollArea->setBackgroundRole(QPalette::Dark);
     scrollArea->setWidget(imageLabel);
     scrollArea->setVisible(false);
     scrollArea->setWidgetResizable(true);
+    scrollArea->setFrameShape(QFrame::NoFrame); // this removes the white border!
+
 
     timer = new QTimer(this);
     timer->setSingleShot(true);
@@ -112,6 +115,9 @@ bool Photobox::loadFile(int num)
         imageFileList->removeAt(num);
         return false;
     }
+    //QSize s = scrollArea->size();
+    //setImage(newImage.scaled(s,Qt::KeepAspectRatio));
+    //setImage(newImage.scaled(1920,1200,Qt::KeepAspectRatio));
     setImage(newImage);
     return true;
 }
@@ -306,7 +312,7 @@ void Photobox::saveSettings()
      QSettings settings(settingsFile, QSettings::IniFormat);
 
      // Path:
-     settings.setValue("text", ui->directoryEdit->text());
+     settings.setValue("path", ui->directoryEdit->text());
      //Slidehow Time:
      settings.setValue("slideshowTime", ui->slideShowTimeSpinBox->value());
      //review Time
