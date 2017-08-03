@@ -76,17 +76,34 @@ void Photobox::resizeEvent(QResizeEvent *event)
     //                       tr("Size: %1 x %2")
     //                       .arg(event->size().width()).arg(event->size().height()));
 
-    qInfo() << "size: "<< event->size().width() << "x" << event->size().height();
+    resizeScrollArea(event->size());
+
+    QWidget::resizeEvent(event);
+}
+
+void Photobox::resizeScrollArea(QSize windowSize)
+{
+    qInfo() << "Window size: "<< windowSize.width() << "x" << windowSize.height();
 
     if(imageLabel->pixmap() != NULL) // if no image is loaded don't do this
     {
-        QSize imgSize = imageLabel->pixmap()->size();
-        scrollArea->resize(imgSize.scaled(event->size(),Qt::KeepAspectRatio));
-        int x = event->size().width() - scrollArea->size().width();
-        scrollArea->move(x/2,0);
+        QSize imgSize = image.size();                       // get the image size.
+        //QSize imgSize = imageLabel->pixmap()->size();
+        qInfo() << "img size: "<< imgSize.width() << "x" << imgSize.height();
+
+        QSize tempWindowSize = windowSize;
+        if(ui->cutHeightCheckBox->isChecked())
+        {   // modify the height to "oversize" the image --> the upper and lower borders will be cut when the image is centered in the window.
+            tempWindowSize.setHeight((windowSize.width()*imgSize.height())/imgSize.width());
+        }
+        scrollArea->resize(imgSize.scaled(tempWindowSize,Qt::KeepAspectRatio));
+
+        int x = windowSize.width() - scrollArea->size().width();
+        int y = windowSize.height() - scrollArea->size().height();
+        scrollArea->move(x/2, y/2);                         // center the scrolArea. (--> the image)
+
     }
 
-    QWidget::resizeEvent(event);
 }
 
 bool Photobox::loadFile(const QString &fileName)
@@ -127,6 +144,7 @@ void Photobox::setImage(const QImage &newImage)
     image = newImage;
     imageLabel->setPixmap(QPixmap::fromImage(image));
     imageLabel->adjustSize();
+    resizeScrollArea(this->size());
 }
 
 
@@ -271,6 +289,7 @@ void Photobox::setGuiVisible(bool value)
     ui->slideShowTimeSpinBox->setVisible(value);
     ui->loadButton->setVisible(value);
     ui->saveButton->setVisible(value);
+    ui->cutHeightCheckBox->setVisible(value);
 }
 
 void Photobox::loadSettings()
@@ -305,6 +324,13 @@ void Photobox::loadSettings()
         ui->fullScreenCheckBox->setChecked(showFS);
      }
 
+     //Cut Height
+     bool cutHeight = settings.value("cutHeight", "true").toBool();
+     if (ui->cutHeightCheckBox)
+     {
+        ui->cutHeightCheckBox->setChecked(cutHeight);
+     }
+
 }
 
 void Photobox::saveSettings()
@@ -319,6 +345,8 @@ void Photobox::saveSettings()
      settings.setValue("reviewTime", ui->reviewTimeSpinBox->value());
      //Show Fullscreen
      settings.setValue("showFullscreen", ui->fullScreenCheckBox->isChecked());
+     //Cut Height
+     settings.setValue("cutHeight", ui->cutHeightCheckBox->isChecked());
 
 }
 

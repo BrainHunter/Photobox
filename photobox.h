@@ -47,6 +47,7 @@ private:
     bool loadFile(const QString &fileName);
     void setImage(const QImage &newImage);
     bool loadFile(int num);
+    void resizeScrollArea(QSize windowSize);
 
     // FileList
     QStringList* imageFileList;

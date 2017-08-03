@@ -17,3 +17,12 @@ To automatically copy photos from a camera into a folder a tethered shooting sof
  make
  ./Photobox_Widget
  
+#Parameters
+* Directory: Images contained in this path will be shown. This path is also watched for new images.
+* SlideShow time: Images are displayed this long in the SlideShow.
+* Review Time: A new image is displayed this long. After this time is expired the sliedshow will 
+  continue.
+* Fullscreen: The image will be shown in Fullscreen if checked.
+* Cut Height: If the image is to tall it will be cut on the top and bottom. This is usefull when
+  displaying 3:2 images on a widescreen monitor.
+  

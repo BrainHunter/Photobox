@@ -180,6 +180,19 @@
     <string>Load</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="cutHeightCheckBox">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>70</y>
+     <width>70</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cut height</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
