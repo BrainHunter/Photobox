@@ -4,6 +4,15 @@
 #include <QImageReader>
 #include <QtWidgets>
 
+
+// hack the qinfo not declared error for QT < v5.5
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+#define qInfo       qDebug
+#define qWarning    qDebug
+#define qFatal      qDebug
+#define qCritical   qDebug
+#endif
+
 Photobox::Photobox(QWidget *parent) :
     QWidget(parent),
     imageLabel(new QLabel),
@@ -37,6 +46,13 @@ Photobox::Photobox(QWidget *parent) :
 
     watcher = new QFileSystemWatcher(this);
     connect(watcher,SIGNAL(directoryChanged(QString)),this,SLOT(updateEventTest(QString)));
+
+    // autostart
+    if(ui->AutostartCheckBox->isChecked())
+    {
+        on_pushButton_clicked();       // meh... should rename this function ;-)
+
+    }
 
 }
 
@@ -109,7 +125,9 @@ void Photobox::resizeScrollArea(QSize windowSize)
 bool Photobox::loadFile(const QString &fileName)
 {
     QImageReader reader(fileName);
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     reader.setAutoTransform(true);
+    #endif
     const QImage newImage = reader.read();
     if (newImage.isNull()) {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
@@ -124,7 +142,9 @@ bool Photobox::loadFile(const QString &fileName)
 bool Photobox::loadFile(int num)
 {
     QImageReader reader(imageFileList->at(num));
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     reader.setAutoTransform(true);
+    #endif
     const QImage newImage = reader.read();
     if (newImage.isNull()) {
         // file is not readable / does not exist / something
@@ -290,6 +310,7 @@ void Photobox::setGuiVisible(bool value)
     ui->loadButton->setVisible(value);
     ui->saveButton->setVisible(value);
     ui->cutHeightCheckBox->setVisible(value);
+    ui->AutostartCheckBox->setVisible(value);
 }
 
 void Photobox::loadSettings()
@@ -331,6 +352,13 @@ void Photobox::loadSettings()
         ui->cutHeightCheckBox->setChecked(cutHeight);
      }
 
+     //Autostart
+     bool autostart = settings.value("autostart", "false").toBool();
+     if (ui->AutostartCheckBox)
+     {
+        ui->AutostartCheckBox->setChecked(autostart);
+     }
+
 }
 
 void Photobox::saveSettings()
@@ -347,6 +375,8 @@ void Photobox::saveSettings()
      settings.setValue("showFullscreen", ui->fullScreenCheckBox->isChecked());
      //Cut Height
      settings.setValue("cutHeight", ui->cutHeightCheckBox->isChecked());
+     //Autostart
+     settings.setValue("autostart", ui->AutostartCheckBox->isChecked());
 
 }
 

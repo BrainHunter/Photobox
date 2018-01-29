@@ -193,6 +193,19 @@
     <string>Cut height</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="AutostartCheckBox">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>90</y>
+     <width>70</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Autostart</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
