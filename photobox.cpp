@@ -76,6 +76,7 @@ void Photobox::keyPressEvent(QKeyEvent *event)
             timer->stop();
             watcher->removePaths(watcher->directories());
             this->showNormal();
+            this->unsetCursor();
             scrollArea->setVisible(false);
             setGuiVisible(true);
             this->setPalette(this->style()->standardPalette());
@@ -188,6 +189,7 @@ void Photobox::on_pushButton_clicked()
     if(ui->fullScreenCheckBox->isChecked())
     {
         this->showFullScreen();
+        this->setCursor(Qt::BlankCursor);
     }
 
     watcher->addPath(ui->directoryEdit->text());
