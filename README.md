@@ -5,6 +5,15 @@ Photobox is monitoring a folder for new images. If a new image is detected it wi
 imediately. After a specified time the Slideshow will continue displaying all the images in the
 monitored folder. 
 
+```mermaid
+  graph LR;
+      Start --> slideshow;
+      newImg(Display new image) -- Review time --> slideshow(next image in Slideshow);
+      slideshow --  Slideshow Time --> slideshow;
+      slideshow -- new image detected -->newImg;
+      slideshow -- ESC pressed --> Stop
+```
+
 
 To automatically copy photos from a camera into a folder a tethered shooting software can be used:
 - Under Windows EOS Uitility can be used for example. 
