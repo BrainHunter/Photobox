@@ -27,14 +27,30 @@ of your camera you can try this one:
  gphoto2 --port usb: --capture-tethered --keep --set-config capturetarget=card 
 ```
 
+## Screenshot
+![main window](doc/MainWindow.PNG)
+
  
 ## Build
+### Linux
 
+On Ubuntu and similar install QT like this:
+``` shell
+sudo apt-get install qt5-default qt5-qmake qtbase5-dev-tools
 ```
+
+then switch to the directoy of the source an build the program with qmake:
+``` shell
  qmake Photobox_Widget.pro
  make
  ./Photobox_Widget
 ```
+
+### Windows
+
+The easiest way to build on windows is to install QtCreator and open/compile the project there.
+
+ 
  
 ## Parameters
 * Directory: Images contained in this path will be shown. This path is also watched for new images.
